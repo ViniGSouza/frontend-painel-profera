@@ -7,7 +7,7 @@ import linguagens from "../assets/linguagens.jpeg";
 export const Dashboard = () => {
   return (
     <Layout>
-      <div className="flex-1 p-10">
+      <div className="flex-1">
         <h2 className="mb-4 text-3xl font-semibold text-custom-green">Bem-vindo!</h2>
         <p className="mb-5">Selecione o curso que você deseja alterar ou navegue no menu ao lado para inserir/editar aulas.</p>
         <div className="flex flex-wrap -mx-3">
