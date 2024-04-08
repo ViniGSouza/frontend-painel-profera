@@ -1,7 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Layout } from "./Layout";
+import { Layout } from "../components/Layout";
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -23,45 +21,24 @@ interface Course {
   urlImg: string;
 }
 
-interface UpdateCourse {
-  id: string;
-  name?: string;
-  description?: string;
-  urlImg?: string;
-}
-
-export const Course = () => {
+export const AddCourse = () => {
   const userToken = useAuthStore((state) => state.userToken);
-  const [course, setCourse] = useState<Course>();
-  const { id } = useParams();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<UpdateCourse>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<Course>({
     resolver: zodResolver(courseSchema),
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/courses/${id}`);
-        setCourse(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar dados:", error);
-      }
-    }
-    fetchData();
-  }, [id]);
-
-  const onSubmit = async (data: UpdateCourse) => {
+  const onSubmit = async (data: Course) => {
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/courses/${id}`, data, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/courses`, data, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
       reset();
-      toast.success('Curso atualizado com sucesso!');
+      toast.success('Curso adicionado com sucesso!');
     } catch (error) {
-      console.error("Erro ao atualizar o curso:", error);
-      toast.error('Erro ao atualizar o curso.');
+      console.error("Erro ao criar o curso:", error);
+      toast.error('Erro ao criar o curso.');
     }
   };
 
@@ -69,11 +46,9 @@ export const Course = () => {
     <Layout>
       <>
         <ToastContainer />
-        <h1 className="text-4xl font-semibold text-custom-green">Nome do curso: {course?.name}</h1>
-        <p className="mt-2 mb-5 text-light-green">Descrição: {course?.description}</p>
-
-        <div className="mt-10">
-          <h2 className="mb-4 text-xl">Para alterar o curso, preencha os campos abaixo e clique em alterar:</h2>
+        <h1 className="text-4xl font-semibold text-custom-green">Adicionar novo curso</h1>
+        <div className="mt-5">
+          <h2 className="mb-4 text-xl">Para adicionar um novo curso, preencha os campos abaixo:</h2>
           <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
             <label className="block mb-2 font-bold text-gray-700" htmlFor="name">
               Nome do curso
@@ -109,7 +84,7 @@ export const Course = () => {
             {errors.urlImg && <p className="my-2 text-red-500">{errors.urlImg.message}</p>}
 
             <button className="w-full px-4 py-2 mt-5 font-bold text-white rounded bg-custom-green hover:bg-light-green">
-              Alterar
+              Adicionar curso
             </button>
           </form>
         </div>
